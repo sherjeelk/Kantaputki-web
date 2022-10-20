@@ -42,6 +42,7 @@ export class PianoDescComponent implements OnInit {
   customServiceName = '';
   customServiceDesc = '';
   selected: any = [];
+  forOmakotitalon: string = '';
 
   constructor(private formBuilder: FormBuilder, public dataService: DataBindingService, private api: APIService, private session: SessionService,
               public util: UtilService) {
@@ -90,6 +91,74 @@ export class PianoDescComponent implements OnInit {
   pushService(service, $event: MatCheckboxChange) {
     const servicePrice = service.price + service.price * this.totalPercentCharge / 100;
     console.log('this is pushed service', service);
+    const serviceBody = this.createServiceBody(service, servicePrice);
+    if ($event.checked) {
+      this.addServiceToOrder(service, serviceBody);
+    } else {
+      this.removeServiceFromOrder(service, serviceBody);
+    }
+  }
+
+  addOmakotitalon(service: any) {
+    let servicePrice = 0;
+    if (service.name == 'Kerrosten määrä') {
+      if (service.quantity < 3) {
+        service.quantity += 1;
+        if (service.quantity == 2 || service.quantity == 3) {
+          service.price = service.price + service.quantity*100;
+        }
+        servicePrice = service.price + service.price * this.totalPercentCharge / 100;
+      }
+    } else {
+      service.quantity += 1;
+      service.price = service.basePrice*service.quantity;
+      servicePrice = service.price + service.price * this.totalPercentCharge / 100;
+    }
+    const serviceBody = this.createServiceBody(service, servicePrice);
+    const kerrostenPresent = this.chosenServices.find(pushedService => pushedService.name == service.name);
+    if (!(kerrostenPresent && service.name == 'Kerrosten määrä' && kerrostenPresent.quantity == 3)) {
+      if (kerrostenPresent) {
+        this.removeServiceFromOrder(service, kerrostenPresent);
+      }
+      if (service.quantity > 0) {
+        this.addServiceToOrder(service, serviceBody);
+      }
+    }
+  }
+
+  removeOmakotitalon(service) {
+    console.log(service);
+    let serviceBody: any;
+    let servicePrice = 0;
+    if (service.quantity > 0) {
+      if (service.name == 'Kerrosten määrä') {
+        if (service.quantity == 2 || service.quantity == 3) {
+          service.price = service.price - service.quantity*100;
+        }
+        service.quantity -= 1;
+        if (service.quantity != 0) {
+          console.log("service.quantity", service.quantity)
+          servicePrice = service.price + service.price * this.totalPercentCharge / 100;
+        }
+      } else {
+        service.quantity -= 1;
+        if (service.quantity != 0) {
+          service.price = service.basePrice*service.quantity;
+          servicePrice = service.price + service.price * this.totalPercentCharge / 100;
+        }
+      }
+      serviceBody = this.createServiceBody(service, servicePrice);
+    }
+    const kerrostenPresent = this.chosenServices.find(pushedService => pushedService.name == service.name);
+    if (kerrostenPresent) {
+      this.removeServiceFromOrder(service, kerrostenPresent);
+    }
+    if (service.quantity > 0) {
+      this.addServiceToOrder(service, serviceBody);
+    }
+  }
+
+  createServiceBody(service: any, servicePrice: number) {
     const serviceBody = {
       name: service.name,
       shortName: service.shortName,
@@ -99,47 +168,52 @@ export class PianoDescComponent implements OnInit {
       type: 'Service',
       price: servicePrice,
       enable: true,
+      quantity: 0
     };
-
-    if ($event.checked) {
-      service.checked = true;
-      this.chosenServices.push(serviceBody);
-      this.dataService.setService(this.chosenServices);
-      this.total = _.sumBy(this.chosenServices, 'price');
-      console.log('this is total after adding', this.total);
-
-      this.dataService.total = this.total;
-      this.subTotal = this.total + (this.totalAbsoluteCharge ? this.totalAbsoluteCharge : 0) + this.totalPercentChargeValue;
-      this.dataService.subTotal = this.subTotal;
-      this.dataService.total = this.total + this.totalAbsoluteCharge;
-      console.log('this is subtotal', this.totalAbsoluteCharge);
-
-      this.selectedServices.push(service);
-      this.withoutTaxTotal = _.sumBy(this.selectedServices, 'price');
-      this.dataService.withoutTaxTotal = this.withoutTaxTotal;
-      console.log('this is all service data chaaecked', this.dataService.allServices);
-
-    } else {
-      service.checked = false;
-
-      _.remove(this.chosenServices, serviceBody);
-      this.dataService.setService(this.chosenServices);
-
-      this.total = _.sumBy(this.chosenServices, 'price');
-      console.log('this is total ater removal', this.total);
-      this.dataService.total = this.total;
-      console.log('this is % ************', this.totalPercentChargeValue);
-      this.subTotal = this.total + (this.totalAbsoluteCharge ? this.totalAbsoluteCharge : 0) + this.totalPercentChargeValue;
-      this.dataService.subTotal = this.subTotal;
-      this.dataService.total = this.total + this.totalAbsoluteCharge;
-      console.log('this is subtotal', this.totalAbsoluteCharge);
-      _.remove(this.selectedServices, service);
-      this.withoutTaxTotal = _.sumBy(this.selectedServices, 'price');
-      this.dataService.withoutTaxTotal = this.withoutTaxTotal;
-      console.log('this is subtotal', this.totalAbsoluteCharge);
-      console.log('this is all service data unchecked', this.dataService.allServices);
-
+    if (service.quantity) {
+      serviceBody.quantity = service.quantity;
     }
+    return serviceBody;
+  }
+
+  addServiceToOrder(service: any, serviceBody: any) {
+    service.checked = true;
+    this.chosenServices.push(serviceBody);
+    this.dataService.setService(this.chosenServices);
+    this.total = _.sumBy(this.chosenServices, 'price');
+    console.log('this is total after adding', this.total);
+
+    this.dataService.total = this.total;
+    this.subTotal = this.total + (this.totalAbsoluteCharge ? this.totalAbsoluteCharge : 0) + this.totalPercentChargeValue;
+    this.dataService.subTotal = this.subTotal;
+    this.dataService.total = this.total + this.totalAbsoluteCharge;
+    console.log('this is subtotal', this.totalAbsoluteCharge);
+
+    this.selectedServices.push(service);
+    this.withoutTaxTotal = _.sumBy(this.selectedServices, 'price');
+    this.dataService.withoutTaxTotal = this.withoutTaxTotal;
+    console.log('this is all service data chaaecked', this.dataService.allServices);
+  }
+
+  removeServiceFromOrder(service: any, serviceBody: any) {
+    service.checked = false;
+
+    _.remove(this.chosenServices, serviceBody);
+    this.dataService.setService(this.chosenServices);
+
+    this.total = _.sumBy(this.chosenServices, 'price');
+    console.log('this is total ater removal', this.total);
+    this.dataService.total = this.total;
+    console.log('this is % ************', this.totalPercentChargeValue);
+    this.subTotal = this.total + (this.totalAbsoluteCharge ? this.totalAbsoluteCharge : 0) + this.totalPercentChargeValue;
+    this.dataService.subTotal = this.subTotal;
+    this.dataService.total = this.total + this.totalAbsoluteCharge;
+    console.log('this is subtotal', this.totalAbsoluteCharge);
+    _.remove(this.selectedServices, service);
+    this.withoutTaxTotal = _.sumBy(this.selectedServices, 'price');
+    this.dataService.withoutTaxTotal = this.withoutTaxTotal;
+    console.log('this is subtotal', this.totalAbsoluteCharge);
+    console.log('this is all service data unchecked', this.dataService.allServices);
   }
 
   getServiceClass(service) {
@@ -158,6 +232,10 @@ export class PianoDescComponent implements OnInit {
       this.dataService.allServices = this.allServices;
       for (const item of this.dataService.allServices.results) {
         for (const product of item.products) {
+          if (item.name == "Omakotitalon Putkiremontti") {
+            product['quantity'] = 0;
+            product['basePrice'] = product.price;
+          }
           product.checked = false;
         }
       }
@@ -299,8 +377,9 @@ export class PianoDescComponent implements OnInit {
     }
     }
 
-  createCustomObject(selected: any) {
+  createCustomObject(selected: any, productName: string) {
     console.log('this will be used to create custom object', selected.products);
+    this.forOmakotitalon = productName;
     selected.products.forEach(item => {
       item.expanded = false;
     }

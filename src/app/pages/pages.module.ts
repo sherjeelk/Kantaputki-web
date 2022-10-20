@@ -27,6 +27,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {InformationComponent} from '../information/information.component';
 import {AppModule} from '../app.module';
 import {SafeHtmlPipe} from '../services/SafeHtml';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 // import {AppModule} from '../app.module';
 
 
@@ -46,6 +48,7 @@ import {SafeHtmlPipe} from '../services/SafeHtml';
   ],
     imports: [
         CommonModule,
+        MatListModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
@@ -63,6 +66,7 @@ import {SafeHtmlPipe} from '../services/SafeHtml';
         FormsModule,
         MatExpansionModule,
         MatIconModule,
+        MatDividerModule
         // AppModule
 
     ],

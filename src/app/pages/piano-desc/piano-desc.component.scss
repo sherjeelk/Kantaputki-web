@@ -213,3 +213,163 @@ color: black;
     padding: 10px;
   }
 }
+
+.add-remove {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.add-remove-color {
+  background-color: #4CAF50;
+  color: #FFFFFF;
+}
+
+.extra-heading{
+  text-align: left;
+}
+
+.price-margin {
+  width: 60%;
+  text-align: center;
+  padding-top: 3px;
+}
+
+.button-pa {
+  padding-left: 15px;
+}
+
+@media (min-width: 281px) and (max-width: 399px) {
+  .price-margin {
+    width: 50%;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 280px) {
+  .price-margin {
+    width: 35%;
+  }
+}
+
+.service-name {
+  width: 40%;
+}
+
+.list-content {
+  width: 30%;
+}
+
+.list-content-tem {
+  width: 30%;
+  text-align: right;
+}
+
+.mat-list-item {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.for-mobile {
+  display: none;
+}
+.for-mobile-two {
+  display: none;
+}
+
+.medium-mobile-two {
+  display: none;
+}
+
+@media (min-width: 541px) and (max-width: 767px) {
+  .for-mobile {
+    display: none;
+  }
+  .for-mobile-two {
+    display: none;
+  }
+  .list-content {
+    width: 40%;
+  }
+  .list-content-tem {
+    width: 20%;
+  }
+  .service-margin {
+    margin-bottom: 7px;
+  }
+}
+
+@media (min-width: 454px) and (max-width: 540px) {
+  .for-mobile {
+    display: none;
+  }
+  .for-mobile-two {
+    display: none;
+  }
+  .service-name {
+    width: 40%;
+  }
+  .list-content {
+    text-align: center;
+    width: 50%;
+  }
+  .list-content-tem {
+    width: 10%;
+  }
+  .service-margin {
+    margin-bottom: 7px;
+  }
+  .second-h {
+    margin-top: 15px;
+  }
+}
+
+@media (min-width: 314px) and (max-width: 453px) {
+  .for-desktop {
+    display: none;
+  }
+  .for-mobile-two {
+    display: none;
+  }
+  .for-mobile {
+    display: block;
+  }
+  ::ng-deep .mat-list-item-content {
+    width: 110%;
+  }
+  .price-marg {
+    margin-right: 10px;
+  }
+  .mobile-list-item {
+    width: 100%;
+  }
+  .second-h {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 313px) {
+  .for-desktop {
+    display: none;
+  }
+  .for-mobile {
+    display: none;
+  }
+  .medium-mobile {
+    display: none;
+  }
+  .for-mobile-two {
+    display: block;
+  }
+  ::ng-deep .mat-list-item-content {
+    width: 110%;
+  }
+  .price-marg {
+    margin-right: 10px;
+  }
+  .mobile-list-item {
+    width: 100%;
+  }
+  .second-option-margin {
+    margin-top: 40px;
+  }
+}
